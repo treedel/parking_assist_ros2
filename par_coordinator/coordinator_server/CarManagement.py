@@ -1,8 +1,8 @@
 import sqlite3
 
-# The class that manages cars
+# The class that handle cars
 class CarManagement:
-    def __init__(self, conn, reset=False):
+    def __init__(self, conn, reset=False, reload=False):
         self.conn = conn
         self.cursor = self.conn.cursor()
 
@@ -12,71 +12,53 @@ class CarManagement:
             self.conn.commit()
 
         query = """CREATE TABLE IF NOT EXISTS cars(
-                        registrationNumber VARCHAR PRIMARY KEY,
-                        name VARCHAR,
-                        pin VARCHAR,
+                        number VARCHAR PRIMARY KEY,
                         groupName VARCHAR
                 )"""
         self.cursor.execute(query)
         self.conn.commit()
 
-    def register_car(self, registration_number, name, pin):
-        query = 'SELECT registrationNumber from cars WHERE registrationNumber = ?'
-        self.cursor.execute(query, (registration_number,))
-        res = self.cursor.fetchone()
-        self.conn.commit()
-
-        if res: return False
-
-        query = "INSERT INTO cars (registrationNumber, name, pin) VALUES (?, ?, ?)"
-        self.cursor.execute(query, (registration_number, name, pin))
-        self.conn.commit()
-
-        return True
-
-    def authenticate_car(self, registration_number, pin):
-        query = 'SELECT registrationNumber FROM cars WHERE registrationNumber = ? AND pin = ?'
-        self.cursor.execute(query, (registration_number, pin))
-        result = self.cursor.fetchone()
-        self.conn.commit()
-        
-        if result: return True
-        return False
+        if reload:
+            query = 'UPDATE cars SET groupName = NULL'
+            self.cursor.execute(query)
+            self.conn.commit()
     
-    def get_car_group(self, registration_number):
-        query = 'SELECT groupName from cars WHERE registrationNumber = ? AND groupName IS NOT NULL'
-        self.cursor.execute(query, (registration_number,))
+    def get_car_group(self, number):
+        query = 'SELECT groupName from cars WHERE number = ? AND groupName IS NOT NULL'
+        self.cursor.execute(query, (number,))
         res = self.cursor.fetchone()
         self.conn.commit()
 
         if not res: return False
         return res[0]
 
-    def set_car_group(self, registration_number, group_name):
-        query = 'SELECT groupName from groups WHERE groupName = ? AND capacity>occupied'
+    def set_car_group(self, number, group_name):
+        query = 'SELECT number from cars WHERE number = ?'
         self.cursor.execute(query, (group_name,))
         res = self.cursor.fetchone()
         self.conn.commit()
 
-        if not res: return False
+        if res:
+            query = "INSERT INTO cars (number) VALUES (?)"
+            self.cursor.execute(query, (number,))
+            self.conn.commit()
 
-        query = 'SELECT registrationNumber from cars WHERE registrationNumber = ?'
-        self.cursor.execute(query, (registration_number,))
+        query = 'SELECT groupName from groups WHERE groupName = ? AND capacity>occupied'
+        self.cursor.execute(query, (group_name,))
         res = self.cursor.fetchone()
         self.conn.commit()
-
         if not res: return False
 
         # If there is already an existing group selected
-        query = 'SELECT registrationNumber from cars WHERE registrationNumber = ? AND groupName IS NULL'
-        self.cursor.execute(query, (registration_number,))
+        query = 'SELECT number from cars WHERE number = ? AND groupName IS NULL'
+        self.cursor.execute(query, (number,))
         res = bool(self.cursor.fetchone())
         self.conn.commit()
 
-        if not res: self.reset_car_group(registration_number)
+        if not res: self.reset_car_group(number)
 
-        query = 'UPDATE cars SET groupName = ? WHERE registrationNumber = ?'
-        self.cursor.execute(query, (group_name, registration_number))
+        query = 'UPDATE cars SET groupName = ? WHERE number = ?'
+        self.cursor.execute(query, (group_name, number))
         self.conn.commit()
 
         query = 'UPDATE groups SET occupied = occupied+1 WHERE groupName = ?'
@@ -85,9 +67,9 @@ class CarManagement:
 
         return True
 
-    def reset_car_group(self, registration_number):
-        query = 'SELECT groupName FROM cars WHERE registrationNumber = ? AND groupName IS NOT NULL'
-        self.cursor.execute(query, (registration_number,))
+    def reset_car_group(self, number):
+        query = 'SELECT groupName FROM cars WHERE number = ? AND groupName IS NOT NULL'
+        self.cursor.execute(query, (number,))
         group_name = self.cursor.fetchone()
         self.conn.commit()
 
@@ -95,8 +77,8 @@ class CarManagement:
 
         group_name = group_name[0]
 
-        query = 'UPDATE cars SET groupName = NULL WHERE registrationNumber = ?'
-        self.cursor.execute(query, (registration_number,))
+        query = 'UPDATE cars SET groupName = NULL WHERE number = ?'
+        self.cursor.execute(query, (number,))
         self.conn.commit()
 
         query = 'UPDATE groups SET occupied = occupied-1 WHERE groupName = ? AND occupied>0'
@@ -106,19 +88,14 @@ class CarManagement:
         return True
 
 if __name__ == "__main__":
-    conn = sqlite3.connect('parking.db')
+    conn = sqlite3.connect('parking.db', True)
 
     # Create test environment
-    auth = CarManagement(conn)
-    auth.register_car('TN00AA0001', 'aaa', 'aaa')
-    auth.register_car('TN00AA0002', 'aba', 'aba')
-    auth.register_car('TN00AA0003', 'eea', 'eea')
-    auth.register_car('TN00AA0004', 'car', 'car')
+    cars = CarManagement(conn)
 
     # Testing API functions
-    print(auth.authenticate_car('TN00AA0004', 'car'))
-    print(auth.set_car_group('TN00AA0002', 'A'))
-    print(auth.set_car_group('TN00AA0004', 'B'))
-    print(auth.reset_car_group('TN00AA0004'))
-    print(auth.set_car_group('TN00AA0004', 'A'))
-    print(auth.get_car_group('TN00AA0004'))
+    print(cars.set_car_group('TN00AA0002', 'A'))
+    print(cars.set_car_group('TN00AA0004', 'B'))
+    print(cars.reset_car_group('TN00AA0004'))
+    print(cars.set_car_group('TN00AA0004', 'A'))
+    print(cars.get_car_group('TN00AA0004'))

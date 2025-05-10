@@ -1,8 +1,8 @@
 import sqlite3
 
-# The class that handles parking locations
+# The class that handle parking locations
 class ParkingGroupManagement:
-    def __init__(self, conn, reset=False, refresh=True):
+    def __init__(self, conn, reset=False, reload=True):
         self.conn = conn
         self.cursor = self.conn.cursor()
 
@@ -22,7 +22,7 @@ class ParkingGroupManagement:
         self.cursor.execute(query)
         self.conn.commit()
 
-        if refresh:
+        if reload:
             query = "UPDATE groups SET occupied=0"
             self.cursor.execute(query)
             self.conn.commit()
@@ -65,7 +65,7 @@ class ParkingGroupManagement:
 
         return True, list(map(float, res))
     
-    def get_groups_statistics(self):
+    def get_group_statistics(self):
         query = 'SELECT groupName, capacity, occupied from groups'
 
         self.cursor.execute(query)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     if (ret): print(position)
     else: print("Couldn't find the specified room")
 
-    print(groups.get_groups_statistics())
+    print(groups.get_group_statistics())
     groups.remove_group('2')
     groups.remove_group('1')
-    print(groups.get_groups_statistics())
+    print(groups.get_group_statistics())
