@@ -7,12 +7,16 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from nav2_common.launch import RewrittenYaml
 
 map_name = "parking"
+keepout_mask = "keepout"
 
 def generate_launch_description():
     package_name = 'prius_navigation'
     package_share = FindPackageShare(package=package_name).find(package_name)
+
+    lifecycle_nodes = ['filter_mask_server', 'costmap_filter_info_server']
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     map_path = LaunchConfiguration('map_path')
@@ -61,6 +65,55 @@ def generate_launch_description():
         }.items()
     )
 
+    param_substitutions = {
+        'use_sim_time': use_sim_time,
+        'yaml_filename': os.path.join(package_share, 'maps', f'{keepout_mask}.yaml')
+    }
+
+    configured_params = RewrittenYaml(
+        source_file=nav_config_path,
+        param_rewrites=param_substitutions,
+        convert_types=True
+    )
+
+    keepout_map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name="filter_mask_server",
+        emulate_tty=True,
+        parameters=[
+            configured_params,
+            {'use_sim_time': use_sim_time},
+        ],
+        output='screen'
+    )
+
+    keepout_cmap_info_server = Node(
+        package='nav2_map_server',
+        executable='costmap_filter_info_server',
+        name="costmap_filter_info_server",
+        emulate_tty=True,
+        parameters=[
+            configured_params,
+            {'use_sim_time': use_sim_time},
+        ],
+        output='screen'
+    )
+
+    keepout_nav2_lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name="lifecycle_manager_costmap_filters",
+        emulate_tty=True,
+        parameters=[
+            configured_params,
+            {'use_sim_time': use_sim_time},
+            {'autostart': True},
+            {'node_names': lifecycle_nodes}
+        ],
+        output='screen'
+    )
+
     rviz = Node(
         condition=IfCondition(use_rviz),
         package='rviz2',
@@ -79,6 +132,10 @@ def generate_launch_description():
     ld.add_action(declare_rviz_config_path)
 
     ld.add_action(navigation)
+    ld.add_action(keepout_map_server)
+    ld.add_action(keepout_cmap_info_server)
+    ld.add_action(keepout_nav2_lifecycle_manager)
+    
     ld.add_action(rviz)
 
     return ld
