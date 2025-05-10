@@ -69,7 +69,8 @@ class CoordinatorServer:
                 # Example: get_group_position group_name (e.g., "get_group_position A")
                 group_name = args[0]
                 ret, res = groups.get_group_position(group_name)
-                self.response = str(res)         
+                if ret: self.response = f"{res[0]} {res[1]} {res[2]}"
+                else: self.response = "[]"        
             
             elif command == "get_group_statistics":
                 # Example: get_group_statistics (e.g., "get_group_statistics")
