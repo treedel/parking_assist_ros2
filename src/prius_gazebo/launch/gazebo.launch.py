@@ -131,7 +131,7 @@ def generate_launch_description():
                 ),
                 launch_arguments={
                     'use_sim_time': use_sim_time,
-                    'run_global_ekf': "true",
+                    'run_global_ekf': "false",
                 }.items(),
             )
         ],
