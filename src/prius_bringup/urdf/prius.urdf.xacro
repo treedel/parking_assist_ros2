@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="prius_hybrid">
+
+    <!-- Main robot structure -->
+    <xacro:include filename="prius_core.xacro" />
+
+    <!-- Lidar sensor -->
+    <xacro:include filename="lidar.xacro" />
+
+    <!-- IMU/MAG sensor -->
+    <xacro:include filename="imu.xacro" />
+
+    <!-- GPS sensors -->
+    <xacro:include filename="gps.xacro" />
+
+</robot>

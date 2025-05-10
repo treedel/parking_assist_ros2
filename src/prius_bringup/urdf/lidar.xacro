@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="prius_bringup">
+
+    <!-- Constants -->
+    <xacro:property name="lidar_pos" value="0 0 2" />
+    <xacro:property name="lidar_rpy" value="0 0 0" />
+
+    <!-- Model -->
+    <link name="lidar_link" />
+
+    <joint name="lidar_joint" type="fixed">
+        <parent link="chassis" />
+        <child link="lidar_link" />
+        <origin xyz="${lidar_pos}" rpy="${lidar_rpy}" />
+    </joint>
+
+</robot>

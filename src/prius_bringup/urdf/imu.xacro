@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="prius_bringup">
+
+    <!-- Constants -->
+    <xacro:property name="imu_pos" value="0 0 0" />
+    <xacro:property name="imu_rpy" value="0 0 0" />
+
+    <!-- Model -->
+    <link name="imu_link" />
+
+    <joint name="imu_joint" type="fixed">
+        <parent link="chassis" />
+        <child link="imu_link" />
+        <origin xyz="${imu_pos}" rpy="${imu_rpy}" />
+    </joint>
+
+</robot>

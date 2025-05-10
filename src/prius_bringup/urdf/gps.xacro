@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="prius_bringup">
+
+    <!-- Constants -->
+    <xacro:property name="gps_pos" value="0 0 0" />
+    <xacro:property name="gps_rpy" value="0 0 0" />
+
+    <!-- Model -->
+    <link name="gps_link" />
+
+    <joint name="gps_joint" type="fixed">
+        <parent link="chassis" />
+        <child link="gps_link" />
+        <origin xyz="${gps_pos}" rpy="${gps_rpy}" />
+    </joint>
+
+</robot>
