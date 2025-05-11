@@ -21,15 +21,18 @@ class ClientCli:
         self.group_name = res
         print(f"Seat reserved successfully. Group {self.group_name}\n")
 
-    def start_guidance_system(self):
-        pos = interface.get_group_position(self.group_name)
-        print("Guidance system is now running!\n")
-        robot.goToEulerPose(pos)
-        print("Reached alloted area. Look for open slots\n")
-
-    def exit_program(self):
+    def relinquish_slot(self):
         interface.relinquish_parking(self.number)
         self.group_name = None
+
+    def start_guidance_system(self):
+        if (self.group_name): pos = interface.get_group_position(self.group_name)
+        else: pos = interface.get_group_position("EXIT")
+        robot.goToEulerPose(pos)
+        print("Reached target area.\n")
+
+    def exit_program(self):
+        if (self.group_name): self.relinquish_slot()
         print("Exiting the program")
         exit()
 
@@ -37,15 +40,18 @@ class ClientCli:
         while True:
             print("=== Main Menu ===")
             print("1. Reserve slot")
-            print("2. Start Guidance System")
-            print("3. Exit")
+            print("2. Relinquish slot")
+            print("3. Start Guidance System")
+            print("4. Exit")
             
             choice = input("Enter your choice: ")
             if choice == '1':
                 self.reserve_slot()
             elif choice == '2':
-                self.start_guidance_system()
+                self.relinquish_slot()
             elif choice == '3':
+                self.start_guidance_system()
+            elif choice == '4':
                 self.exit_program()
             else:
                 print("Invalid choice\n")

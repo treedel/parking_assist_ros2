@@ -22,7 +22,7 @@ class CoordinatorClientInterface:
     def get_group_position(self, group_name):
         response = self.send_request(f"get_group_position {group_name}")
         if response == "[]": return []
-        position = [float(i) for i in response[1:-1].split(", ")]
+        position = list(map(float, response.split()))
         return position
         
 if __name__ == "__main__":

@@ -81,17 +81,18 @@ if __name__ == "__main__":
 
     # Create test environment
     groups = ParkingGroupManagement(conn)
-    groups.add_group('A', 4, 0.3, 1.0, 1.57)
-    groups.add_group('B', 4, 10.2, 1.1, -1.57)
+    groups.add_group('A', 4, 8.5, 11.0, 0.0)
+    groups.add_group('B', 4, 8.5, 0.5, 0.0)
+    groups.add_group('C', 4, 4.5, 8.0, 1.57)
+    groups.add_group('D', 4, 4.5, -8.0, -1.57)
 
-    groups.add_group('1', 4, 1.2, 5.1, -1.57)
-    groups.add_group('2', 4, 10.2, 5.1, -1.57)
+    groups.add_group('EXIT', 0, 30.0, 0.5, 0.0)
 
     ret, position = groups.get_group_position('A')
     if (ret): print(position)
     else: print("Couldn't find the specified room")
 
     print(groups.get_group_statistics())
-    groups.remove_group('2')
-    groups.remove_group('1')
-    print(groups.get_group_statistics())
+    #groups.remove_group('2')
+    #groups.remove_group('1')
+    #print(groups.get_group_statistics())

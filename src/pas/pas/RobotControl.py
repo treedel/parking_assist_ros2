@@ -10,9 +10,9 @@ class RobotControl(Node):
     # Reference for euler to quart conversion
     preset_ref = {
         -1.57: [-0.707, 0.707],
-        0: [1.0, 0.0],
+        3.14: [1.0, 0.0],
         1.57: [0.707, 0.707],
-        3.14: [0.0, 1.0]
+        0.0: [0.0, 1.0]
     }
 
     def __init__(self, set_initial_pose=False, initial_pose=(0, 0, 0)):
@@ -49,13 +49,7 @@ class RobotControl(Node):
 
     # Makes NAV2 navigate to the given pose tuple
     def goToEulerPose(self, pose_tuple):      
-        has_completed = False
-
-        while not has_completed:
-            self.navigator.goToPose(self.eulerToMapPose(pose_tuple))
-            while not self.navigator.isTaskComplete(): sleep(1)
-            if (self.navigator.getResult() == TaskResult.SUCCEEDED): has_completed = True
-            sleep(3)
+        self.navigator.goToPose(self.eulerToMapPose(pose_tuple))
 
 def main():
     robot = RobotControl(True, (0.0, 0.0, 0.0))

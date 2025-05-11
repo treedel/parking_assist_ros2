@@ -90,7 +90,7 @@ class CoordinatorServer:
                     min_n = "False"
 
                     for room in res:
-                        if (room[2] < min_c):
+                        if (room[2]<room[1]) and (room[2]<min_c):
                             min_c = room[2]
                             min_n = room[0]
                     

@@ -9,7 +9,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import RewrittenYaml
 
-map_name = "parking"
+map_name = "parking_updated"
 keepout_mask = "keepout"
 
 def generate_launch_description():
