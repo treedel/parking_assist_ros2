@@ -34,12 +34,12 @@ class CarManagement:
 
     def set_car_group(self, number, group_name):
         query = 'SELECT number from cars WHERE number = ?'
-        self.cursor.execute(query, (group_name,))
+        self.cursor.execute(query, (number,))
         res = self.cursor.fetchone()
         self.conn.commit()
 
-        if res:
-            query = "INSERT INTO cars (number) VALUES (?)"
+        if not res:
+            query = "INSERT INTO cars (number, groupName) VALUES (?, NULL)"
             self.cursor.execute(query, (number,))
             self.conn.commit()
 
