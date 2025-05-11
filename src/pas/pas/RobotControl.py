@@ -50,6 +50,7 @@ class RobotControl(Node):
     # Makes NAV2 navigate to the given pose tuple
     def goToEulerPose(self, pose_tuple):      
         self.navigator.goToPose(self.eulerToMapPose(pose_tuple))
+        while not self.navigator.isTaskComplete(): sleep(1)
 
 def main():
     robot = RobotControl(True, (0.0, 0.0, 0.0))

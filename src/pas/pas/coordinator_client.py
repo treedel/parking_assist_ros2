@@ -22,8 +22,14 @@ class ClientCli:
         print(f"Seat reserved successfully. Group {self.group_name}\n")
 
     def relinquish_slot(self):
-        interface.relinquish_parking(self.number)
-        self.group_name = None
+        res = interface.relinquish_parking(self.number)
+        if res:
+            print("Successfully relinquished your slot")
+            self.group_name = None
+            return
+        
+        print("Error relinquishing your slot")
+        
 
     def start_guidance_system(self):
         if (self.group_name): pos = interface.get_group_position(self.group_name)
