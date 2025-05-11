@@ -18,7 +18,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (DeclareLaunchArgument, GroupAction, IncludeLaunchDescription,
                             SetEnvironmentVariable)
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node, PushROSNamespace
@@ -31,9 +31,13 @@ def generate_launch_description() -> LaunchDescription:
     bringup_dir = get_package_share_directory('nav2_bringup')
     launch_dir = os.path.join(bringup_dir, 'launch')
 
+    cust_bringup_dir = get_package_share_directory('prius_navigation')
+    cust_launch_dir = os.path.join(cust_bringup_dir, 'launch')
+
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     slam = LaunchConfiguration('slam')
+    load_map_server = LaunchConfiguration('load_map_server')
     map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
     params_file = LaunchConfiguration('params_file')
@@ -71,6 +75,10 @@ def generate_launch_description() -> LaunchDescription:
 
     declare_slam_cmd = DeclareLaunchArgument(
         'slam', default_value='False', description='Whether run a SLAM'
+    )
+
+    declare_load_map_server = DeclareLaunchArgument(
+        'load_map_server', default_value='False', description='Whether to publish map here'
     )
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
@@ -147,10 +155,25 @@ def generate_launch_description() -> LaunchDescription:
                 PythonLaunchDescriptionSource(
                     os.path.join(launch_dir, 'localization_launch.py')
                 ),
-                condition=IfCondition(PythonExpression(['not ', slam, ' and ', use_localization])),
+                condition=IfCondition(PythonExpression(['not ', slam, ' and ', use_localization, ' and ', load_map_server])),
                 launch_arguments={
                     'namespace': namespace,
                     'map': map_yaml_file,
+                    'use_sim_time': use_sim_time,
+                    'autostart': autostart,
+                    'params_file': params_file,
+                    'use_composition': use_composition,
+                    'use_respawn': use_respawn,
+                    'container_name': 'nav2_container',
+                }.items(),
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    os.path.join(cust_launch_dir, 'nav2b_localization_nm.launch.py')
+                ),
+                condition=UnlessCondition(PythonExpression(['not ', slam, ' and ', use_localization, ' and ', load_map_server])),
+                launch_arguments={
+                    'namespace': namespace,
                     'use_sim_time': use_sim_time,
                     'autostart': autostart,
                     'params_file': params_file,
@@ -185,6 +208,7 @@ def generate_launch_description() -> LaunchDescription:
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_slam_cmd)
+    ld.add_action(declare_load_map_server)
     ld.add_action(declare_map_yaml_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)

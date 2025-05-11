@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# File modified to remove docking server
+
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -47,7 +49,6 @@ def generate_launch_description() -> LaunchDescription:
         'collision_monitor',
         'bt_navigator',
         'waypoint_follower',
-        'docking_server',
     ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
@@ -212,17 +213,6 @@ def generate_launch_description() -> LaunchDescription:
                 remappings=remappings,
             ),
             Node(
-                package='opennav_docking',
-                executable='opennav_docking',
-                name='docking_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings,
-            ),
-            Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
                 name='lifecycle_manager_navigation',
@@ -294,13 +284,6 @@ def generate_launch_description() -> LaunchDescription:
                         package='nav2_collision_monitor',
                         plugin='nav2_collision_monitor::CollisionMonitor',
                         name='collision_monitor',
-                        parameters=[configured_params],
-                        remappings=remappings,
-                    ),
-                    ComposableNode(
-                        package='opennav_docking',
-                        plugin='opennav_docking::DockingServer',
-                        name='docking_server',
                         parameters=[configured_params],
                         remappings=remappings,
                     ),
