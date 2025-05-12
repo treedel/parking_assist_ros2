@@ -25,7 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'coordinator_client = pas.coordinator_client:main'
+            'coordinator_client = pas.coordinator_client:main',
+            'coordinator_server = pas.coordinator_server:main'
         ],
     },
 )
