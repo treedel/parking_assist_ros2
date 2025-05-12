@@ -3,7 +3,7 @@
 A ROS2 Jazzy based parking reservation, guidance and self driving system. Includes a simulation of a car 
 with packages that integrate them with a central parking coordinator system.
 
-Features:
+## Features:
 - A Simulated car (toyota prius) with sensors on a parking garage using Gazebo
 - Autonomous driving system
 - Detached map publisher for multi vehicle access

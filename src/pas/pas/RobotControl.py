@@ -1,7 +1,6 @@
 from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
-import rclpy
 from rclpy.node import Node
 
 from time import sleep
@@ -16,7 +15,6 @@ class RobotControl(Node):
     }
 
     def __init__(self, set_initial_pose=False, initial_pose=(0, 0, 0)):
-        rclpy.init()
         super().__init__('coordinator_client')
 
         self.navigator = BasicNavigator()
@@ -50,7 +48,7 @@ class RobotControl(Node):
     # Makes NAV2 navigate to the given pose tuple
     def goToEulerPose(self, pose_tuple):      
         self.navigator.goToPose(self.eulerToMapPose(pose_tuple))
-        while not self.navigator.isTaskComplete(): sleep(1)
+        #while not self.navigator.isTaskComplete(): sleep(1)
 
 def main():
     robot = RobotControl(True, (0.0, 0.0, 0.0))

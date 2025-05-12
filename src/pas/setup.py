@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'coordinator_client = pas.coordinator_client:main',
+            'coordinator_gui_client = pas.coordinator_gui_client:main',
             'coordinator_server = pas.coordinator_server:main'
         ],
     },
