@@ -235,12 +235,8 @@
           </gz-gui>
       </plugin>
 
-      <!-- Inspector -->
-      <plugin filename="ComponentInspector" name="Component inspector">
-          <gz-gui>
-              <property type="bool" key="showTitleBar">false</property>
-              <property type="string" key="state">docked</property>
-          </gz-gui>
+      <!-- Entity tree -->
+      <plugin filename="EntityTree" name="Entity tree">
       </plugin>
 
       <!-- Teleop -->
