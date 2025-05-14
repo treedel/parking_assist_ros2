@@ -9,3 +9,4 @@ with packages that integrate them with a central parking coordinator system.
 - Detached map publisher for multi vehicle access
 - Localization using wheels, IMU, LiDAR and NavSat
 - Parking coordinator system nodes (client and server) attached with sqlite3 database
+- Dashboard GUI for reservation and status display
